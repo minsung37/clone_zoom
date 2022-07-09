@@ -29,3 +29,23 @@ Socket IO는 프론트와 백엔드 간 실시간 통신을 가능하게 해주�
 2.1강
 Socket IO설치 npm i socket.io
 
+3.3강 webRTC
+스프링의 역할은 상대서버가 어디있는지 알려주는 역할
+
+3.8강
+npm i -g localtunnel
+터미널두개키고
+npm run dev 
+lt --port 3000 
+
+3.9강
+sunt서버 => 컴퓨터가 공용 IP주소를 찾게 한다.
+=> 어떤 것을 request하면 인터넷에서, 내가 누군지를 알려주는 서버
+=> WEBrtc를 사용한 실제 서비스나 전문적인 뭔가를 만들고싶으면
+=> 내소유의 스턴서버를 운영해야한다.
+
+3.10강 => 데이터 채널
+data channel => 웹소켓없이도 채팅이 가능하다.
+peer가 많으면 WEBrtc 느리다.
+WEBrtc 3명까지만
+인원수 많으면 sfu방식 사용
