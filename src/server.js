@@ -2,9 +2,6 @@ import http from "http";
 import { Server } from "socket.io";
 import { instrument } from '@socket.io/admin-ui';
 import express from "express";
-import { CommandStartedEvent } from 'mongodb';
-// import mongoose from 'mongoose';
-
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -24,7 +21,7 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.render("index"));
-// app.get("/*", (_, res) => res.redirect("/"));
+app.get("/*", (_, res) => res.redirect("/"));
 
 // 연결이 되었을 때와 연결이 끊겼을 때 publicRooms 함수를 사용하면
 // 방이 존재하는지, 존재하지 않는지 확인할 수 있다.
@@ -65,7 +62,8 @@ var room_to_scribe_stop = {};
 
 
 wsServer.on("connection", (socket) => {
-  socket["nickname"] = "익명이";
+  let c = (Math.floor(Math.random() * 10000)).toString();
+  socket["nickname"] = "익명이" + c;
   // 모든 이벤트를 핸들링하는 리스너(이벤트 핸들러)를 정의함.
   socket.onAny((event) => {
     // console.log(wsServer.sockets.adapter);
@@ -73,9 +71,27 @@ wsServer.on("connection", (socket) => {
   });
   
 
-  // 방에 들어옴
-  socket.on("enter_room", (roomName, time, done) => {
+  // webRTC 들어옴
+  socket.on("join_room", (roomName) => {
+    // socket.join(roomName);
+    console.log("채팅방 입장");
+    socket.to(roomName).emit("welcome_rtc");
+  });
 
+
+  socket.on("offer", (offer, roomName) => {
+    socket.to(roomName).emit("offer", offer);
+  });
+  socket.on("answer", (answer, roomName) => {
+    socket.to(roomName).emit("answer", answer);
+  });
+  socket.on("ice", (ice, roomName) => {
+    socket.to(roomName).emit("ice", ice);
+  });
+
+
+  // 채팅방에 들어옴
+  socket.on("enter_room", (roomName, time, done) => {
     // 이름이 roomName인 room에 입장한다. 두번째 들어오는 애 시간을 못받음
     if (!publicRooms().includes(roomName)) {
       socket["roomName"] = roomName;
@@ -88,14 +104,14 @@ wsServer.on("connection", (socket) => {
       room_to_scribe_restart[roomName] = [];
       console.log(room_to_scribe_restart);
       // mongo 테이블만들기 => 테이블명 room_to_mongo에 테이블명 등록 => 이거 기반으로 밑에서 데이터 추가함
-
+      room_to_mongo[roomName] = [];
       console.log(socket["roomName"], "번방 회의 시작시간 :", time);
     }
     socket.join(roomName);
     // 인자로 받은 함수를 FE에서 실행
     done();
     // roomName 룸에 있는 모든 사람들에게 welcome 이벤트를 emit했다.
-    socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
+    // socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     wsServer.sockets.emit("room_change", publicRooms());
   });
   
@@ -131,7 +147,7 @@ wsServer.on("connection", (socket) => {
       // 여기서 
       console.log(msg);
       // mongo room_to_mongo에 등록된 디비명에 데이터 넣기 => 기록중 데이터
-
+      room_to_mongo[room].push(msg);
       // 방에 있는 사람들에게 메시지를 뿌려줌
       socket.to(room).emit("new_message", `${socket.nickname}: ${msg["message"]}`);
       // 인자로 받은 함수FE에서 실행
@@ -160,6 +176,7 @@ wsServer.on("connection", (socket) => {
       console.log("다시시작", room_to_scribe_restart[socket["roomName"]]);
       console.log("기록중지", room_to_scribe_stop[socket["roomName"]]);
       console.log("별표시간", room_to_star[socket["roomName"]]);
+      console.log("대화저장", room_to_mongo[socket["roomName"]]);
 
       // delete room_to_scribe_restart[socket["roomName"]];
       // delete room_to_star[socket["roomName"]];
@@ -176,7 +193,7 @@ wsServer.on("connection", (socket) => {
 
 
   // 나가기 버튼 누르면 연결종료 요청 받기
-  socket.on('forceDisconnect', function(){
+  socket.on('forceDisconnect', function() {
     socket.disconnect();
   });
 });

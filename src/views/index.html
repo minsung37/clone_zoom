@@ -6,28 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HandsFree</title>
     <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <h1 style="text-align: center;">HandsFree</h1>
     <main>
       <div id="welcome"> 
-        <form>
-          <input placeholder="방 번호" required type="text">
-          <button>입장하기</button>
-        </form>
-        <h4>방목록:</h4>
-        <ul></ul>
-      </div>
-      <div id="room">
-        <button onclick="exit_room()">나가기</button>
-        <h3></h3>
-        <h2>기록중</h2>
-        <ul></ul>
-        <form id="name">
-          <input placeholder="닉네임" required type="text">
-          <button>닉네임바꾸기</button>
+        <form id="enter">
+          <!-- <form> -->
+            <!-- <input placeholder="room name" required type="text"> -->
+            <button>입장하기</button>
+          <!-- </form> -->
         </form>
       </div>
+        <div id="room" style="margin-left: 900px; width: 300px;" >
+          <button onclick="exit_room()">회의종료</button>
+          <div id="chat" class="chat">
+            <h2>기록중</h2>
+            <ul></ul>
+          </div>
+        </div>
+        <div id="call">
+          <div id="myStream" class="chat">
+            <div style="position: absolute; top:20%; left: 10%;">
+              <video id="myFace" autoplay playsinline width="400" height="400"></video>
+              <div>
+                <button id="mute">음소거</button>
+                <button id="camera">카메라 끄기</button>
+              </div>
+            </div>
+              <video id="peerFace" autoplay playsinline width="400" height="400" style="position: absolute; top:20%; left: 40%;"></video>
+          </div>
+        </div>
     </main>
     <script src="/socket.io/socket.io.js"> </script>
     <script src="/public/js/app.js"> </script>
