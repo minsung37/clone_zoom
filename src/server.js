@@ -139,8 +139,9 @@ wsServer.on("connection", (socket) => {
       // 한번만 등록
     }
     if (room_to_scribe[room]) {
-      if (msg["message"].includes("막둥아 별표@")) {
+      if (msg["message"].includes("별표*************")) {
         room_to_star[room].push(msg["talking_end_time"] - room_to_start[room]);
+        msg["message"] = msg["message"] + "*********";
       }
       msg["talking_begin_time"] = msg["talking_begin_time"] - room_to_start[room];
       msg["talking_end_time"] = msg["talking_end_time"] - room_to_start[room];
@@ -178,9 +179,10 @@ wsServer.on("connection", (socket) => {
       console.log("별표시간", room_to_star[socket["roomName"]]);
       console.log("대화저장", room_to_mongo[socket["roomName"]]);
 
-      // delete room_to_scribe_restart[socket["roomName"]];
-      // delete room_to_star[socket["roomName"]];
-      // delete room_to_scribe_stop[socket["roomName"]];
+      delete room_to_scribe_restart[socket["roomName"]];
+      delete room_to_star[socket["roomName"]];
+      delete room_to_scribe_stop[socket["roomName"]];
+      delete room_to_mongo[socket["roomName"]];
     }
     socket.rooms.forEach(room => socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1)); // 각 방에 있는 모든 사람들에게
   });

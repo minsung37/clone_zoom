@@ -138,11 +138,12 @@ function handleRoomSubmit(event){
   // 회의 시간 받기
   const date = new Date();
   const meeting_start_time = date.getTime();
+  const input = form.querySelector("input"); 
 
-  socket.emit("enter_room", "1", meeting_start_time, showRoom);
-  roomName = "1";  // 얘가 showroom보다 먼저 실행됨. showroom은 callback 함수이므로!!
+  socket.emit("enter_room", input.value, meeting_start_time, showRoom);
+  roomName = input.value;  // 얘가 showroom보다 먼저 실행됨. showroom은 callback 함수이므로!!
   console.log(roomName);
-  socket.emit("join_room", "1");
+  socket.emit("join_room", roomName);
   initCall();
   // 마이크를 켠다
   recognition.start();
@@ -181,9 +182,9 @@ recognition.onend = function () {
       socket.emit("new_message", sockets, roomName, ()=> {});
       console.log("다시시작");
     } else if (texts.includes("막둥아 별표") || texts.includes("막둥아 대표")) {
-      sockets["message"] = "막둥아 별표@";
+      sockets["message"] = "별표*************";
       socket.emit("new_message", sockets, roomName, ()=> {
-      addMessage(`You : ${sockets["message"]}`);
+      addMessage(`나 : ${sockets["message"]}`);
       });
       console.log("별표");
     } else if (texts.includes("막둥아 종료")) {
@@ -192,7 +193,7 @@ recognition.onend = function () {
     } 
     else {
       socket.emit("new_message", sockets, roomName, ()=> {
-      addMessage(`You : ${sockets["message"]}`);
+      addMessage(`나 : ${sockets["message"]}`);
       });
     }
   }
