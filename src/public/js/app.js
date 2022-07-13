@@ -6,6 +6,8 @@ const welcome = document.getElementById("welcome");
 const form = welcome.querySelector("form");
 const room = document.getElementById("room");
 
+let chat = document.querySelector('#chat');
+chat.scrollTop = chat.scrollHeight;
 
 const myFace = document.getElementById("myFace");
 const muteBtn = document.getElementById("mute");
@@ -107,11 +109,15 @@ let sockets =  {
 
 // 메시지 등록하는 함수(필요없음)
 function addMessage(message) {
-  const ul = room.querySelector("ul");
-  const li = document.createElement("li");
+  const ul = document.getElementById("chat");
+  const li = document.createElement("p");
   li.innerText = message;
-  ul.appendChild(li);
+  ul.append(li);
+  const objDiv = document.getElementById("chat");
+  objDiv.scrollTop = objDiv.scrollHeight;
 }
+
+
 
 
 // 룸에 들어왔음(필요없음)
@@ -139,10 +145,12 @@ function handleRoomSubmit(event){
   const date = new Date();
   const meeting_start_time = date.getTime();
   const input = form.querySelector("input"); 
+  const h3 = room.querySelector("h3");
 
   socket.emit("enter_room", input.value, meeting_start_time, showRoom);
   roomName = input.value;  // 얘가 showroom보다 먼저 실행됨. showroom은 callback 함수이므로!!
   console.log(roomName);
+  h3.innerText = `방번호 : ${roomName}`;
   socket.emit("join_room", roomName);
   initCall();
   // 마이크를 켠다
@@ -171,20 +179,20 @@ recognition.onend = function () {
     const h2 = room.querySelector("h2");
 
     // 막둥이 지능 올리기
-    if (texts === "막둥아 기록 중지") {
+    if (texts === "막둥아 기록 중지" || texts === "막둥 아 기록 중지.") {
       sockets["message"] = "기록중지@";
       h2.innerText = `기록중지`;
       socket.emit("new_message", sockets, roomName, ()=> {});
       console.log("기록중지");
-    } else if (texts === "막둥아 기록 시작") {
+    } else if (texts === "막둥아 기록 시작" || texts === "막둥 아 기록 시작.") {
       sockets["message"] = "기록시작@";
       h2.innerText = `기록시작`;
       socket.emit("new_message", sockets, roomName, ()=> {});
       console.log("다시시작");
-    } else if (texts.includes("막둥아 별표") || texts.includes("막둥아 대표")) {
+    } else if (texts.includes("막둥아 별표") || texts.includes("막둥아 대표") || texts.includes("박동화 별표") || texts.includes("막둥 아 별표.")) {
       sockets["message"] = "별표*************";
       socket.emit("new_message", sockets, roomName, ()=> {
-      addMessage(`나 : ${sockets["message"]}`);
+      addMessage(`막둥이 : ${sockets["message"]}`);
       });
       console.log("별표");
     } else if (texts.includes("막둥아 종료")) {
@@ -232,11 +240,11 @@ form.addEventListener("submit", handleRoomSubmit);
 // });
 
 // 안해도됨
-socket.on("bye", (left, newCount) =>{
-  const h3 = room.querySelector("h3");  
-  h3.innerText = `room ${roomName} (${newCount})`;
-  addMessage(`${left} 나감`);
-});
+// socket.on("bye", (left, newCount) =>{
+//   const h3 = room.querySelector("h3");  
+//   h3.innerText = `room ${roomName} (${newCount})`;
+//   addMessage(`${left} 나감`);
+// });
 
 // 필요없음
 socket.on("new_message", addMessage);
@@ -252,6 +260,11 @@ socket.on("room_change", (rooms) => {
     // roomList.append(li);
   })
 });
+
+const stt = document.getElementById("chat");
+stt.onkeyup = function (evt) {
+  this.scrollTop = this.scrollHeight;
+};
 
 
 socket.on("welcome_rtc", async () => {
@@ -310,15 +323,24 @@ function handleAddStream(data) {
 // (필요없음)
 socket.on("scribe_start", msg => {
   const h2 = room.querySelector("h2");
-  h2.innerText = `기록시작`;
+  h2.innerText = "기록중";
+  // h2.style.color="white";
+  // document.getElementById("sc").style.color="white";
 });
 
 
 // (필요없음)
 socket.on("scribe_end", msg => {
   const h2 = room.querySelector("h2");
-  h2.innerText = `기록중지`;
+  h2.innerText = "X기록중지X";
+  // h2.style.color="red";
+  // document.getElementById("sc").style.color="red";
 });
+
+socket.on("video_off", msc =>{
+  const peerFace = document.getElementById("peerFace");
+  peerFace.srcObject = null;
+})
 
 
 async function initCall() {

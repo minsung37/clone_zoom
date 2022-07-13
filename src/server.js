@@ -3,6 +3,7 @@ import { Server } from "socket.io";
 import { instrument } from '@socket.io/admin-ui';
 import express from "express";
 
+
 const app = express();
 const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer, {
@@ -161,6 +162,12 @@ wsServer.on("connection", (socket) => {
   socket.on("disconnecting", () => {
     // console.log(socket.rooms);
     // 1명인데 종료하면 방폭
+    // 발표할떄만!! 한명이나가면 화면 끄기
+    if (countRoom(socket["roomName"]) === 2) {
+      console.log("화면꺼");
+      socket.to(socket["roomName"]).emit("video_off", "1");
+
+    }
     if (countRoom(socket["roomName"]) === 1) {
       var end = new Date();
       var end_time = end.getTime();

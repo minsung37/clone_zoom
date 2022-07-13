@@ -9,20 +9,23 @@
     <link rel="stylesheet" href="./style.css">
   </head>
   <body>
+    <h1 style="margin-left: 680px;">HandsFree</h1>
     <main>
       <div id="welcome"> 
-        <form id="enter">
+        <form id="enter" style="width: 40px; position: absolute; top:33%; left:39%;">
           <form>
-            <button>입장하기</button>
-            <input placeholder="방 번호" required type="text">
+            <button style="margin-left: 75px;">입장하기</button>
+            <input style="margin-left: 27px;" placeholder="방 번호" required type="text">
           </form>
         </form>
       </div>
         <div id="room" style="margin-left: 900px; width: 300px;" >
+          <h3>방번호</h3>
           <button onclick="exit_room()">회의종료</button>
-          <div id="chat" class="chat">
-            <h2>기록중</h2>
-            <ul></ul>
+          <h2 id="sc">기록중</h2>
+
+          <div id="chat" class="chat" style="overflow: auto; height: 300px;">
+            <p></p>
           </div>
         </div>
         <div id="call">
