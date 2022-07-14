@@ -64,7 +64,7 @@ var room_to_scribe_stop = {};
 
 wsServer.on("connection", (socket) => {
   let c = (Math.floor(Math.random() * 10000)).toString();
-  socket["nickname"] = "익명이" + c;
+  socket["nickname"] = "참가자" + c;
   // 모든 이벤트를 핸들링하는 리스너(이벤트 핸들러)를 정의함.
   socket.onAny((event) => {
     // console.log(wsServer.sockets.adapter);

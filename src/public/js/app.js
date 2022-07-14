@@ -153,6 +153,8 @@ function handleRoomSubmit(event){
   h3.innerText = `방번호 : ${roomName}`;
   socket.emit("join_room", roomName);
   initCall();
+  initCall();
+  initCall();
   // 마이크를 켠다
   recognition.start();
   console.log("mike on");
