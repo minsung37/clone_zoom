@@ -53,7 +53,7 @@ var room_to_start = {};
 // 방마다 기록여부를 저장하는 딕셔너리
 var room_to_scribe = {};
 // mongo 저장할 디비명 저장하는 디셔너리
-var room_to_mongo = {};
+// var room_to_mongo = {};
 // 별표시간
 var room_to_star = {};
 // 기록중지시간
@@ -105,7 +105,7 @@ wsServer.on("connection", (socket) => {
       room_to_scribe_restart[roomName] = [];
       console.log(room_to_scribe_restart);
       // mongo 테이블만들기 => 테이블명 room_to_mongo에 테이블명 등록 => 이거 기반으로 밑에서 데이터 추가함
-      room_to_mongo[roomName] = [];
+      // room_to_mongo[roomName] = [];
       console.log(socket["roomName"], "번방 회의 시작시간 :", time);
     }
     socket.join(roomName);
@@ -149,7 +149,7 @@ wsServer.on("connection", (socket) => {
       // 여기서 
       console.log(msg);
       // mongo room_to_mongo에 등록된 디비명에 데이터 넣기 => 기록중 데이터
-      room_to_mongo[room].push(msg);
+      // room_to_mongo[room].push(msg);
       // 방에 있는 사람들에게 메시지를 뿌려줌
       socket.to(room).emit("new_message", `${socket.nickname}: ${msg["message"]}`);
       // 인자로 받은 함수FE에서 실행
@@ -184,12 +184,12 @@ wsServer.on("connection", (socket) => {
       console.log("다시시작", room_to_scribe_restart[socket["roomName"]]);
       console.log("기록중지", room_to_scribe_stop[socket["roomName"]]);
       console.log("별표시간", room_to_star[socket["roomName"]]);
-      console.log("대화저장", room_to_mongo[socket["roomName"]]);
+      // console.log("대화저장", room_to_mongo[socket["roomName"]]);
 
       delete room_to_scribe_restart[socket["roomName"]];
       delete room_to_star[socket["roomName"]];
       delete room_to_scribe_stop[socket["roomName"]];
-      delete room_to_mongo[socket["roomName"]];
+      // delete room_to_mongo[socket["roomName"]];
     }
     socket.rooms.forEach(room => socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1)); // 각 방에 있는 모든 사람들에게
   });
